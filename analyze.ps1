@@ -13,6 +13,7 @@ foreach ($output in $outputs) {
             Severity = "Medium"
             Recommendation = "Review VM size or deallocate if unused"
             Evidence = "CPU average is $($output.cpu)% and monthly cost is $($output.cost)"
+            Source = "CostGuard Analysis"
         }
         $findings += $finding   
     } elseif ($output.type -eq "storage" -and $output.lastAccessedDaysAgo -gt 90 -and $output.cost -gt 20){
@@ -25,6 +26,7 @@ foreach ($output in $outputs) {
             Severity = "Medium"
             Recommendation = "Review access patterns, archive if needed, or delete if unused"
             Evidence = "Last accessed $($output.lastAccessedDaysAgo) days ago and monthly cost is $($output.cost)"
+            Source = "CostGuard Analysis"
         }
         $findings += $finding
     } else {
@@ -32,7 +34,7 @@ foreach ($output in $outputs) {
     }
 }
 $findings | Format-Table -AutoSize
-
+$findings[0] | Format-List *
 $findings | Export-Csv -Path "C:\Users\brook\Downloads\CostGuard-main\CostGuard-main\findings.csv" -NoTypeInformation
 
 Write-Host "CostGuard analysis complete. Findings exported to findings.csv"

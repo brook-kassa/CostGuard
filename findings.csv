@@ -1,3 +1,3 @@
-"ResourceName","ResourceType","MonthlyCost","Issue","Severity","Recommendation","Evidence"
-"vm-prod-01","vm","120","Oversized VM","Medium","Review VM size or deallocate if unused","CPU average is 3% and monthly cost is 120"
-"old-storage-acct","storage","35","Underutilized Storage","Medium","Review access patterns, archive if needed, or delete if unused","Last accessed 120 days ago and monthly cost is 35"
+"ResourceName","ResourceType","MonthlyCost","Issue","Severity","Recommendation","Evidence","Source"
+"vm-prod-01","vm","120","Oversized VM","Medium","Review VM size or deallocate if unused","CPU average is 3% and monthly cost is 120","CostGuard Analysis"
+"old-storage-acct","storage","35","Underutilized Storage","Medium","Review access patterns, archive if needed, or delete if unused","Last accessed 120 days ago and monthly cost is 35","CostGuard Analysis"
