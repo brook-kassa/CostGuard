@@ -14,6 +14,7 @@ foreach ($output in $outputs) {
             Recommendation = "Review VM size or deallocate if unused"
             Evidence = "CPU average is $($output.cpu)% and monthly cost is $($output.cost)"
             Source = "CostGuard Analysis"
+            GeneratedOn = Get-Date -Format "dddd MM/dd/yyyy hh:mm tt"
         }
         $findings += $finding   
     } elseif ($output.type -eq "storage" -and $output.lastAccessedDaysAgo -gt 90 -and $output.cost -gt 20){
@@ -27,6 +28,7 @@ foreach ($output in $outputs) {
             Recommendation = "Review access patterns, archive if needed, or delete if unused"
             Evidence = "Last accessed $($output.lastAccessedDaysAgo) days ago and monthly cost is $($output.cost)"
             Source = "CostGuard Analysis"
+            GeneratedOn = Get-Date -Format "dddd MM/dd/yyyy hh:mm tt" 
         }
         $findings += $finding
     } else {
