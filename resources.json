@@ -1,0 +1,29 @@
+[
+ {
+    "name": "vm-prod-01",
+    "type": "vm",
+    "cpu": 3,
+    "cost": 120,
+    "lastAccessedDaysAgo": 120,
+    "Issue": "",
+    "Severity": "",
+    "Recommendation": ""
+
+ },
+ {
+    "name": "vm-dev-01",
+    "type": "vm",
+    "cpu": 20,
+    "cost": 45,
+    "lastAccessedDaysAgo": 410,
+    "Issue": "",
+    "Severity": "",
+    "Recommendation": ""
+ },
+ {
+    "name": "old-storage-acct",
+    "type": "storage",
+    "cost": 35,
+    "lastAccessedDaysAgo": 120
+ }
+]
