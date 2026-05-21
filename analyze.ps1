@@ -2,6 +2,7 @@ $jsonString = Get-Content -Path "C:\Users\brook\Downloads\CostGuard-main\CostGua
 
 $outputs = $jsonString | ConvertFrom-Json
 $findings = @()
+$generatedOn = Get-Date -Format "dddd MM/dd/yyyy hh:mm tt zz"
 foreach ($output in $outputs) {
     if ($output.type -eq "vm" -and $output.cpu -lt 5 -and $output.cost -gt 50){
         Write-Host $output.name "is Oversized"
@@ -14,7 +15,7 @@ foreach ($output in $outputs) {
             Recommendation = "Review VM size or deallocate if unused"
             Evidence = "CPU average is $($output.cpu)% and monthly cost is $($output.cost)"
             Source = "CostGuard Analysis"
-            GeneratedOn = Get-Date -Format "dddd MM/dd/yyyy hh:mm tt"
+            GeneratedOn = $generatedOn
         }
         $findings += $finding   
     } elseif ($output.type -eq "storage" -and $output.lastAccessedDaysAgo -gt 90 -and $output.cost -gt 20){
@@ -28,7 +29,7 @@ foreach ($output in $outputs) {
             Recommendation = "Review access patterns, archive if needed, or delete if unused"
             Evidence = "Last accessed $($output.lastAccessedDaysAgo) days ago and monthly cost is $($output.cost)"
             Source = "CostGuard Analysis"
-            GeneratedOn = Get-Date -Format "dddd MM/dd/yyyy hh:mm tt" 
+            GeneratedOn = $generatedOn 
         }
         $findings += $finding
     } else {
