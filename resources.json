@@ -25,5 +25,16 @@
     "type": "storage",
     "cost": 35,
     "lastAccessedDaysAgo": 120
+ },
+ {
+    "name": "vm-dev-01-disk",
+    "type": "disk",
+    "diskState": "unattached",
+    "cost": 15,
+    "lastAccessedDaysAgo": 10, 
+    "ActionRequired": "",
+    "Issue": "",
+    "Severity": "",
+    "Recommendation": ""  
  }
 ]

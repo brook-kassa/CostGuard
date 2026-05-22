@@ -14,6 +14,7 @@ foreach ($output in $outputs) {
             Severity = "Medium"
             Recommendation = "Review VM size or deallocate if unused"
             Evidence = "CPU average is $($output.cpu)% and monthly cost is $($output.cost)"
+            ActionRequired = "Review Recommended"
             Source = "CostGuard Analysis"
             GeneratedOn = $generatedOn
         }
@@ -28,6 +29,22 @@ foreach ($output in $outputs) {
             Severity = "Medium"
             Recommendation = "Review access patterns, archive if needed, or delete if unused"
             Evidence = "Last accessed $($output.lastAccessedDaysAgo) days ago and monthly cost is $($output.cost)"
+            ActionRequired = "Manual review required before deletion"
+            Source = "CostGuard Analysis"
+            GeneratedOn = $generatedOn 
+        }
+        $findings += $finding
+    } elseif ($output.type -eq "disk" -and $output.diskState -eq "unattached" -and $output.cost -gt 0){
+        Write-Host $output.name "is Unattached Disk"
+        $finding = [PSCustomObject]@{
+            ResourceName = $output.name
+            ResourceType = $output.type
+            MonthlyCost = $output.cost
+            Issue = "Unattached Disk"
+            Severity = "Medium"
+            Recommendation = "Review unattached disks and delete if not needed"
+            Evidence = "Disk state is unattached and monthly cost is $($output.cost)"
+            ActionRequired = "Manual review required before deletion"
             Source = "CostGuard Analysis"
             GeneratedOn = $generatedOn 
         }
@@ -37,7 +54,6 @@ foreach ($output in $outputs) {
     }
 }
 $findings | Format-Table -AutoSize
-$findings[0] | Format-List *
 $findings | Export-Csv -Path "C:\Users\brook\Downloads\CostGuard-main\CostGuard-main\findings.csv" -NoTypeInformation
 
 Write-Host "CostGuard analysis complete. Findings exported to findings.csv"
