@@ -49,6 +49,21 @@ foreach ($output in $outputs) {
             GeneratedOn = $generatedOn 
         }
         $findings += $finding
+    } elseif ($output.type -eq "publicIp" -and $output.ipaddressState -eq "unattached" -and $output.cost -gt 0) {
+        Write-Host $output.name "is Unattached IP Address"
+        $finding = [PSCustomObject]@{
+            ResourceName = $output.name
+            ResourceType = $output.type
+            MonthlyCost = $output.cost
+            Issue = "Unattached IP Address"
+            Severity = "Medium"
+            Recommendation = "Review unattached IP addresses and delete if not needed"
+            Evidence = "IP address is unattached and monthly cost is $($output.cost)"
+            ActionRequired = "Manual review required before deletion"
+            Source = "CostGuard Analysis"
+            GeneratedOn = $generatedOn 
+        }
+        $findings += $finding
     } else {
         Write-Host $output.name "is Healthy"
     }

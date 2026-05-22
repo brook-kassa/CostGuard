@@ -36,5 +36,16 @@
     "Issue": "",
     "Severity": "",
     "Recommendation": ""  
+ },
+ {
+   "name": "ip-address-01",
+   "type": "publicIp",
+   "cost": 5,
+   "ipaddressState": "unattached",
+   "lastAccessedDaysAgo": 200,
+   "ActionRequired": "",
+   "Issue": "",
+   "Severity": "",
+   "Recommendation": ""
  }
 ]
