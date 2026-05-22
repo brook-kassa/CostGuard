@@ -2,6 +2,8 @@
  {
     "name": "vm-prod-01",
     "type": "vm",
+    "isRunning": true,
+    "environment": "prod",
     "cpu": 3,
     "cost": 120,
     "lastAccessedDaysAgo": 120,
@@ -13,6 +15,8 @@
  {
     "name": "vm-dev-01",
     "type": "vm",
+    "isRunning": true,
+    "environment": "dev",
     "cpu": 20,
     "cost": 45,
     "lastAccessedDaysAgo": 410,
@@ -44,6 +48,18 @@
    "ipaddressState": "unattached",
    "lastAccessedDaysAgo": 200,
    "ActionRequired": "",
+   "Issue": "",
+   "Severity": "",
+   "Recommendation": ""
+ },
+ {
+   "name": "vm-dev-02",
+   "type": "vm",
+   "environment": "dev",
+   "isRunning": true,
+   "cpu": 5,
+   "cost": 60,
+   "lastAccessedDaysAgo": 30,
    "Issue": "",
    "Severity": "",
    "Recommendation": ""

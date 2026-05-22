@@ -4,7 +4,22 @@ $outputs = $jsonString | ConvertFrom-Json
 $findings = @()
 $generatedOn = Get-Date -Format "dddd MM/dd/yyyy hh:mm tt zz"
 foreach ($output in $outputs) {
-    if ($output.type -eq "vm" -and $output.cpu -lt 5 -and $output.cost -gt 50){
+    if ($output.type -eq "vm" -and $output.environment -eq "dev" -and $output.isRunning -eq $true -and $output.cpu -lt 10 -and $output.cost -gt 50) {
+        Write-Host $output.name "is Idle Dev VM"
+        $finding = [PSCustomObject]@{
+            ResourceName = $output.name
+            ResourceType = $output.type
+            MonthlyCost = $output.cost
+            Issue = "Idle Dev VM"
+            Severity = "Medium"
+            Recommendation = "Review idle dev VM and deallocate if not needed"
+            Evidence = "VM is in dev environment, running, with low CPU usage, and monthly cost is $($output.cost)"
+            ActionRequired = "Manual review required before deallocation"
+            Source = "CostGuard Analysis"
+            GeneratedOn = $generatedOn 
+        }
+        $findings += $finding
+    } elseif ($output.type -eq "vm" -and $output.cpu -lt 5 -and $output.cost -gt 50){
         Write-Host $output.name "is Oversized"
         $finding = [PSCustomObject]@{
             ResourceName = $output.name
