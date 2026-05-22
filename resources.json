@@ -6,11 +6,7 @@
     "environment": "prod",
     "cpu": 3,
     "cost": 120,
-    "lastAccessedDaysAgo": 120,
-    "Issue": "",
-    "Severity": "",
-    "Recommendation": ""
-
+    "lastAccessedDaysAgo": 120
  },
  {
     "name": "vm-dev-01",
@@ -19,10 +15,7 @@
     "environment": "dev",
     "cpu": 20,
     "cost": 45,
-    "lastAccessedDaysAgo": 410,
-    "Issue": "",
-    "Severity": "",
-    "Recommendation": ""
+    "lastAccessedDaysAgo": 410
  },
  {
     "name": "old-storage-acct",
@@ -35,22 +28,14 @@
     "type": "disk",
     "diskState": "unattached",
     "cost": 15,
-    "lastAccessedDaysAgo": 10, 
-    "ActionRequired": "",
-    "Issue": "",
-    "Severity": "",
-    "Recommendation": ""  
+    "lastAccessedDaysAgo": 10
  },
  {
    "name": "ip-address-01",
    "type": "publicIp",
    "cost": 5,
    "ipaddressState": "unattached",
-   "lastAccessedDaysAgo": 200,
-   "ActionRequired": "",
-   "Issue": "",
-   "Severity": "",
-   "Recommendation": ""
+   "lastAccessedDaysAgo": 200
  },
  {
    "name": "vm-dev-02",
@@ -59,9 +44,6 @@
    "isRunning": true,
    "cpu": 5,
    "cost": 60,
-   "lastAccessedDaysAgo": 30,
-   "Issue": "",
-   "Severity": "",
-   "Recommendation": ""
+   "lastAccessedDaysAgo": 30
  }
 ]
