@@ -1,5 +1,5 @@
 CostGuard Analysis Summary
-Generated On: Sunday 06/07/2026 01:28 PM -04
+Generated On: Sunday 06/07/2026 01:40 PM -04
 
 Total Flagged Resources: 5
 Total Monthly Cost of Flagged Resources: 235

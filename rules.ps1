@@ -1,3 +1,19 @@
+function Get-Severity {
+    param (
+        [Parameter(Mandatory = $true)]
+        [decimal]$MonthlyCost
+    )
+
+    if ($MonthlyCost -ge 100) {
+        return "High"
+    }
+    elseif ($MonthlyCost -ge 25) {
+        return "Medium"
+    }
+    else {
+        return "Low"
+    }
+}
 function New-Finding {
     param (
         [Parameter(Mandatory = $true)]
@@ -5,9 +21,6 @@ function New-Finding {
 
         [Parameter(Mandatory = $true)]
         [string]$Issue,
-
-        [Parameter(Mandatory = $true)]
-        [string]$Severity,
 
         [Parameter(Mandatory = $true)]
         [string]$Recommendation,
@@ -27,7 +40,7 @@ function New-Finding {
         ResourceType   = $Resource.type
         MonthlyCost    = $Resource.cost
         Issue          = $Issue
-        Severity       = $Severity
+        Severity       = Get-Severity -MonthlyCost $Resource.cost
         Recommendation = $Recommendation
         Evidence       = $Evidence
         ActionRequired = $ActionRequired
@@ -55,7 +68,6 @@ function Test-OversizedVM {
         return New-Finding `
             -Resource $Resource `
             -Issue "Oversized VM" `
-            -Severity "Medium" `
             -Recommendation "Review VM size or deallocate if unused" `
             -Evidence "CPU average is $($Resource.cpu)% and monthly cost is $($Resource.cost)" `
             -ActionRequired "Review recommended" `
@@ -84,7 +96,6 @@ function Test-UnderutilizedStorage {
         return New-Finding `
             -Resource $Resource `
             -Issue "Underutilized Storage" `
-            -Severity "Medium" `
             -Recommendation "Review access patterns, archive if needed, or delete if unused" `
             -Evidence "Last accessed $($Resource.lastAccessedDaysAgo) days ago and monthly cost is $($Resource.cost)" `
             -ActionRequired "Manual review required before deletion" `
@@ -113,7 +124,6 @@ function Test-UnattachedDisk {
         return New-Finding `
             -Resource $Resource `
             -Issue "Unattached Disk" `
-            -Severity "Medium" `
             -Recommendation "Review unattached disks and delete if not needed" `
             -Evidence "Disk state is unattached and monthly cost is $($Resource.cost)" `
             -ActionRequired "Manual review required before deletion" `
@@ -142,7 +152,6 @@ function Test-UnattachedPublicIp {
         return New-Finding `
             -Resource $Resource `
             -Issue "Unattached Public IP" `
-            -Severity "Medium" `
             -Recommendation "Review unattached IP addresses and delete if not needed" `
             -Evidence "IP address is unattached and monthly cost is $($Resource.cost)" `
             -ActionRequired "Manual review required before deletion" `
@@ -173,7 +182,6 @@ function Test-IdleDevVM {
         return New-Finding `
             -Resource $Resource `
             -Issue "Idle Dev VM" `
-            -Severity "Medium" `
             -Recommendation "Review idle dev VM and deallocate if not needed" `
             -Evidence "VM is in dev environment, running, with low CPU usage, and monthly cost is $($Resource.cost)" `
             -ActionRequired "Manual review required before deallocation" `
