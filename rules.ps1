@@ -14,6 +14,15 @@ function Get-Severity {
         return "Low"
     }
 }
+
+function Get-EstimatedSavings {
+    param (
+        [Parameter(Mandatory = $true)]
+        [decimal]$MonthlyCost
+    )
+
+    return $MonthlyCost
+}
 function New-Finding {
     param (
         [Parameter(Mandatory = $true)]
@@ -36,17 +45,18 @@ function New-Finding {
     )
 
     return [PSCustomObject]@{
-        ResourceName   = $Resource.name
-        ResourceType   = $Resource.type
-        MonthlyCost    = $Resource.cost
-        Issue          = $Issue
-        Severity       = Get-Severity -MonthlyCost $Resource.cost
-        Recommendation = $Recommendation
-        Evidence       = $Evidence
-        ActionRequired = $ActionRequired
-        Source         = "CostGuard Analysis"
-        GeneratedOn    = $GeneratedOn
-    }
+        ResourceName     = $Resource.name
+        ResourceType     = $Resource.type
+        MonthlyCost      = $Resource.cost
+        EstimatedSavings = Get-EstimatedSavings -MonthlyCost $Resource.cost
+        Issue            = $Issue
+        Severity         = Get-Severity -MonthlyCost $Resource.cost
+        Recommendation   = $Recommendation
+        Evidence         = $Evidence
+        ActionRequired   = $ActionRequired
+        Source           = "CostGuard Analysis"
+        GeneratedOn      = $GeneratedOn
+}
 }
 
 function Test-OversizedVM {

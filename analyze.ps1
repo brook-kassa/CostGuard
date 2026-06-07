@@ -41,9 +41,16 @@ if ($null -eq $totalFlaggedCost) {
     $totalFlaggedCost = 0
 }
 
+$totalEstimatedSavings = ($findings | Measure-Object -Property EstimatedSavings -Sum).Sum
+
+if ($null -eq $totalEstimatedSavings) {
+    $totalEstimatedSavings = 0
+}
+
 Write-Host ""
 Write-Host "CostGuard analysis complete. Findings exported to findings.csv"
 Write-Host "Total Monthly Cost of Flagged Resources: $totalFlaggedCost"
+Write-Host "Total Estimated Monthly Savings: $totalEstimatedSavings"
 
 $summary = @()
 $summary += "CostGuard Analysis Summary"
@@ -51,6 +58,7 @@ $summary += "Generated On: $generatedOn"
 $summary += ""
 $summary += "Total Flagged Resources: $($findings.Count)"
 $summary += "Total Monthly Cost of Flagged Resources: $totalFlaggedCost"
+$summary += "Total Estimated Monthly Savings: $totalEstimatedSavings"
 $summary += ""
 $summary += "Findings by Issue:"
 
