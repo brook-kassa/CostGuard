@@ -67,6 +67,13 @@ $findings | Group-Object -Property Issue | ForEach-Object {
 }
 
 $summary += ""
+$summary += "Findings by Severity:"
+
+$findings | Group-Object -Property Severity | ForEach-Object {
+    $summary += "- $($_.Name): $($_.Count)"
+}
+
+$summary += ""
 $summary += "Detailed findings exported to findings.csv."
 
 $summary | Set-Content -Path $summaryPath

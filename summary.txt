@@ -1,5 +1,5 @@
 CostGuard Analysis Summary
-Generated On: Sunday 06/07/2026 03:10 PM -04
+Generated On: Tuesday 06/09/2026 02:17 PM -04
 
 Total Flagged Resources: 5
 Total Monthly Cost of Flagged Resources: 235
@@ -11,5 +11,10 @@ Findings by Issue:
 - Unattached Disk: 1
 - Unattached Public IP: 1
 - Idle Dev VM: 1
+
+Findings by Severity:
+- High: 1
+- Medium: 2
+- Low: 2
 
 Detailed findings exported to findings.csv.
