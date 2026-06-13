@@ -129,7 +129,7 @@ function Test-UnattachedDisk {
         $Resource.diskState -eq "unattached" -and
         $Resource.cost -gt 0
     ) {
-        Write-Host "$($Resource.name) is Unattached Disk"
+        Write-Host "$($Resource.name) is an Unattached Disk"
 
         return New-Finding `
             -Resource $Resource `
@@ -157,7 +157,7 @@ function Test-UnattachedPublicIp {
         $Resource.ipaddressState -eq "unattached" -and
         $Resource.cost -gt 0
     ) {
-        Write-Host "$($Resource.name) is Unattached Public IP"
+        Write-Host "$($Resource.name) is an Unattached Public IP"
 
         return New-Finding `
             -Resource $Resource `
@@ -187,7 +187,7 @@ function Test-IdleDevVM {
         $Resource.cpu -lt 10 -and
         $Resource.cost -gt 50
     ) {
-        Write-Host "$($Resource.name) is Idle Dev VM"
+        Write-Host "$($Resource.name) is an Idle Dev VM"
 
         return New-Finding `
             -Resource $Resource `

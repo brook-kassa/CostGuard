@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CostGuard Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f5f7fa;
+            color: #222;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 18px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .card-title {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #eef1f5;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #666;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <h1>CostGuard Analysis Report</h1>
+    <div class="subtitle">Generated On: Saturday 06/13/2026 08:58 AM -04</div>
+
+    <div class="summary-grid">
+        <div class="card">
+            <div class="card-title">Resources Scanned</div>
+            <div class="card-value">6</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Flagged Resources</div>
+            <div class="card-value">5</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Healthy Resources</div>
+            <div class="card-value">1</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Total Findings</div>
+            <div class="card-value">5</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Flagged Monthly Cost</div>
+            <div class="card-value">.\analyze.ps1totalFlaggedCost</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Estimated Monthly Savings</div>
+            <div class="card-value">.\analyze.ps1totalEstimatedSavings</div>
+        </div>
+    </div>
+
+    <h2>Findings</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Resource Name</th>
+                <th>Type</th>
+                <th>Issue</th>
+                <th>Severity</th>
+                <th>Monthly Cost</th>
+                <th>Estimated Savings</th>
+                <th>Recommendation</th>
+                <th>Action Required</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+    <td>vm-prod-01</td>
+    <td>vm</td>
+    <td>Oversized VM</td>
+    <td>High</td>
+    <td>.\analyze.ps1(@{ResourceName=vm-prod-01; ResourceType=vm; MonthlyCost=120; EstimatedSavings=120; Issue=Oversized VM; Severity=High; Recommendation=Review VM size or deallocate if unused; Evidence=CPU average is 3% and monthly cost is 120; ActionRequired=Review recommended; Source=CostGuard Analysis; GeneratedOn=Saturday 06/13/2026 08:58 AM -04}.MonthlyCost)</td>
+    <td>.\analyze.ps1(@{ResourceName=vm-prod-01; ResourceType=vm; MonthlyCost=120; EstimatedSavings=120; Issue=Oversized VM; Severity=High; Recommendation=Review VM size or deallocate if unused; Evidence=CPU average is 3% and monthly cost is 120; ActionRequired=Review recommended; Source=CostGuard Analysis; GeneratedOn=Saturday 06/13/2026 08:58 AM -04}.EstimatedSavings)</td>
+    <td>Review VM size or deallocate if unused</td>
+    <td>Review recommended</td>
+</tr><tr>
+    <td>vm-dev-02</td>
+    <td>vm</td>
+    <td>Idle Dev VM</td>
+    <td>Medium</td>
+    <td>.\analyze.ps1(@{ResourceName=vm-dev-02; ResourceType=vm; MonthlyCost=60; EstimatedSavings=60; Issue=Idle Dev VM; Severity=Medium; Recommendation=Review idle dev VM and deallocate if not needed; Evidence=VM is in dev environment, running, with low CPU usage, and monthly cost is 60; ActionRequired=Manual review required before deallocation; Source=CostGuard Analysis; GeneratedOn=Saturday 06/13/2026 08:58 AM -04}.MonthlyCost)</td>
+    <td>.\analyze.ps1(@{ResourceName=vm-dev-02; ResourceType=vm; MonthlyCost=60; EstimatedSavings=60; Issue=Idle Dev VM; Severity=Medium; Recommendation=Review idle dev VM and deallocate if not needed; Evidence=VM is in dev environment, running, with low CPU usage, and monthly cost is 60; ActionRequired=Manual review required before deallocation; Source=CostGuard Analysis; GeneratedOn=Saturday 06/13/2026 08:58 AM -04}.EstimatedSavings)</td>
+    <td>Review idle dev VM and deallocate if not needed</td>
+    <td>Manual review required before deallocation</td>
+</tr><tr>
+    <td>old-storage-acct</td>
+    <td>storage</td>
+    <td>Underutilized Storage</td>
+    <td>Medium</td>
+    <td>.\analyze.ps1(@{ResourceName=old-storage-acct; ResourceType=storage; MonthlyCost=35; EstimatedSavings=35; Issue=Underutilized Storage; Severity=Medium; Recommendation=Review access patterns, archive if needed, or delete if unused; Evidence=Last accessed 120 days ago and monthly cost is 35; ActionRequired=Manual review required before deletion; Source=CostGuard Analysis; GeneratedOn=Saturday 06/13/2026 08:58 AM -04}.MonthlyCost)</td>
+    <td>.\analyze.ps1(@{ResourceName=old-storage-acct; ResourceType=storage; MonthlyCost=35; EstimatedSavings=35; Issue=Underutilized Storage; Severity=Medium; Recommendation=Review access patterns, archive if needed, or delete if unused; Evidence=Last accessed 120 days ago and monthly cost is 35; ActionRequired=Manual review required before deletion; Source=CostGuard Analysis; GeneratedOn=Saturday 06/13/2026 08:58 AM -04}.EstimatedSavings)</td>
+    <td>Review access patterns, archive if needed, or delete if unused</td>
+    <td>Manual review required before deletion</td>
+</tr><tr>
+    <td>vm-dev-01-disk</td>
+    <td>disk</td>
+    <td>Unattached Disk</td>
+    <td>Low</td>
+    <td>.\analyze.ps1(@{ResourceName=vm-dev-01-disk; ResourceType=disk; MonthlyCost=15; EstimatedSavings=15; Issue=Unattached Disk; Severity=Low; Recommendation=Review unattached disks and delete if not needed; Evidence=Disk state is unattached and monthly cost is 15; ActionRequired=Manual review required before deletion; Source=CostGuard Analysis; GeneratedOn=Saturday 06/13/2026 08:58 AM -04}.MonthlyCost)</td>
+    <td>.\analyze.ps1(@{ResourceName=vm-dev-01-disk; ResourceType=disk; MonthlyCost=15; EstimatedSavings=15; Issue=Unattached Disk; Severity=Low; Recommendation=Review unattached disks and delete if not needed; Evidence=Disk state is unattached and monthly cost is 15; ActionRequired=Manual review required before deletion; Source=CostGuard Analysis; GeneratedOn=Saturday 06/13/2026 08:58 AM -04}.EstimatedSavings)</td>
+    <td>Review unattached disks and delete if not needed</td>
+    <td>Manual review required before deletion</td>
+</tr><tr>
+    <td>ip-address-01</td>
+    <td>publicIp</td>
+    <td>Unattached Public IP</td>
+    <td>Low</td>
+    <td>.\analyze.ps1(@{ResourceName=ip-address-01; ResourceType=publicIp; MonthlyCost=5; EstimatedSavings=5; Issue=Unattached Public IP; Severity=Low; Recommendation=Review unattached IP addresses and delete if not needed; Evidence=IP address is unattached and monthly cost is 5; ActionRequired=Manual review required before deletion; Source=CostGuard Analysis; GeneratedOn=Saturday 06/13/2026 08:58 AM -04}.MonthlyCost)</td>
+    <td>.\analyze.ps1(@{ResourceName=ip-address-01; ResourceType=publicIp; MonthlyCost=5; EstimatedSavings=5; Issue=Unattached Public IP; Severity=Low; Recommendation=Review unattached IP addresses and delete if not needed; Evidence=IP address is unattached and monthly cost is 5; ActionRequired=Manual review required before deletion; Source=CostGuard Analysis; GeneratedOn=Saturday 06/13/2026 08:58 AM -04}.EstimatedSavings)</td>
+    <td>Review unattached IP addresses and delete if not needed</td>
+    <td>Manual review required before deletion</td>
+</tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Source: CostGuard Analysis
+    </div>
+</body>
+</html>

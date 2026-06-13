@@ -1,5 +1,5 @@
 CostGuard Analysis Summary
-Generated On: Wednesday 06/10/2026 10:50 AM -04
+Generated On: Saturday 06/13/2026 09:33 AM EDT
 
 Total Resources Scanned: 6
 Total Flagged Resources: 5
@@ -20,4 +20,5 @@ Findings by Severity:
 - Medium: 2
 - Low: 2
 
-Detailed findings exported to findings.csv.
+Detailed findings exported to: C:\Users\brook\Downloads\CostGuard-main\CostGuard-main\reports\2026-06-13_09-33-50\findings.csv
+HTML report exported to: C:\Users\brook\Downloads\CostGuard-main\CostGuard-main\reports\2026-06-13_09-33-50\report.html
