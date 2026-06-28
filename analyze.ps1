@@ -2,9 +2,12 @@
 . "$PSScriptRoot\report.ps1"
 . "$PSScriptRoot\summary.ps1"
 
+
+
 ####################### Load Data and Prepare Output Paths #########################################################
 
 $jsonPath = "$PSScriptRoot\resources.json"
+$configPath = "$PSScriptRoot\config.json"
 
 $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 $reportFolder = Join-Path -Path "$PSScriptRoot\reports" -ChildPath $timestamp
@@ -18,6 +21,9 @@ $htmlReportPath = Join-Path -Path $reportFolder -ChildPath "report.html"
 $jsonString = Get-Content -Path $jsonPath -Raw
 $outputs = $jsonString | ConvertFrom-Json
 
+$configString = Get-Content -Path $configPath -Raw
+$config = $configString | ConvertFrom-Json
+
 $findings = @()
 
 $generatedOn = Get-Date -Format "dddd MM/dd/yyyy hh:mm tt"
@@ -29,12 +35,12 @@ $generatedOn = "$generatedOn $timeZone"
 foreach ($output in $outputs) {
 
     $ruleResults = @(
-        Test-IdleDevVM -Resource $output -GeneratedOn $generatedOn
-        Test-OversizedVM -Resource $output -GeneratedOn $generatedOn
-        Test-UnderutilizedStorage -Resource $output -GeneratedOn $generatedOn
-        Test-UnattachedDisk -Resource $output -GeneratedOn $generatedOn
-        Test-UnattachedPublicIp -Resource $output -GeneratedOn $generatedOn
-    )
+        Test-IdleDevVM -Resource $output -GeneratedOn $generatedOn -Config $config
+        Test-OversizedVM -Resource $output -GeneratedOn $generatedOn -Config $config
+        Test-UnderutilizedStorage -Resource $output -GeneratedOn $generatedOn -Config $config
+        Test-UnattachedDisk -Resource $output -GeneratedOn $generatedOn -Config $config
+        Test-UnattachedPublicIp -Resource $output -GeneratedOn $generatedOn -Config $config
+)
 
     $matchedFindings = @($ruleResults | Where-Object { $null -ne $_ })
 

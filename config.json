@@ -1,0 +1,31 @@
+{
+  "severity": {
+    "highMonthlyCost": 100,
+    "mediumMonthlyCost": 25
+  },
+  "rules": {
+    "IdleDevVM": {
+      "enabled": true,
+      "maxCpu": 10,
+      "minCost": 50
+    },
+    "OversizedVM": {
+      "enabled": true,
+      "maxCpu": 5,
+      "minCost": 50
+    },
+    "UnderutilizedStorage": {
+      "enabled": true,
+      "minLastAccessedDaysAgo": 90,
+      "minCost": 20
+    },
+    "UnattachedDisk": {
+      "enabled": true,
+      "minCost": 0
+    },
+    "UnattachedPublicIp": {
+      "enabled": true,
+      "minCost": 0
+    }
+  }
+}

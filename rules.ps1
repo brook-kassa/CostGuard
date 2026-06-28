@@ -1,13 +1,16 @@
 function Get-Severity {
     param (
         [Parameter(Mandatory = $true)]
-        [decimal]$MonthlyCost
+        [decimal]$MonthlyCost,
+
+        [Parameter(Mandatory = $true)]
+        [object]$Config
     )
 
-    if ($MonthlyCost -ge 100) {
+    if ($MonthlyCost -ge $Config.severity.highMonthlyCost) {
         return "High"
     }
-    elseif ($MonthlyCost -ge 25) {
+    elseif ($MonthlyCost -ge $Config.severity.mediumMonthlyCost) {
         return "Medium"
     }
     else {
@@ -41,7 +44,10 @@ function New-Finding {
         [string]$ActionRequired,
 
         [Parameter(Mandatory = $true)]
-        [string]$GeneratedOn
+        [string]$GeneratedOn,
+
+        [Parameter(Mandatory = $true)]
+        [object]$Config
     )
 
     return [PSCustomObject]@{
@@ -50,13 +56,13 @@ function New-Finding {
         MonthlyCost      = $Resource.cost
         EstimatedSavings = Get-EstimatedSavings -MonthlyCost $Resource.cost
         Issue            = $Issue
-        Severity         = Get-Severity -MonthlyCost $Resource.cost
+        Severity         = Get-Severity -MonthlyCost $Resource.cost -Config $Config
         Recommendation   = $Recommendation
         Evidence         = $Evidence
         ActionRequired   = $ActionRequired
         Source           = "CostGuard Analysis"
         GeneratedOn      = $GeneratedOn
-}
+    }
 }
 
 function Test-OversizedVM {
@@ -65,13 +71,20 @@ function Test-OversizedVM {
         [object]$Resource,
 
         [Parameter(Mandatory = $true)]
-        [string]$GeneratedOn
+        [string]$GeneratedOn,
+
+        [Parameter(Mandatory = $true)]
+        [object]$Config
     )
+
+    if (-not $Config.rules.OversizedVM.enabled) {
+        return $null
+    }
 
     if (
         $Resource.type -eq "vm" -and
-        $Resource.cpu -lt 5 -and
-        $Resource.cost -gt 50
+        $Resource.cpu -lt $Config.rules.OversizedVM.maxCpu -and
+        $Resource.cost -gt $Config.rules.OversizedVM.minCost
     ) {
         Write-Host "$($Resource.name) is Oversized"
 
@@ -81,7 +94,8 @@ function Test-OversizedVM {
             -Recommendation "Review VM size or deallocate if unused" `
             -Evidence "CPU average is $($Resource.cpu)% and monthly cost is $($Resource.cost)" `
             -ActionRequired "Review recommended" `
-            -GeneratedOn $GeneratedOn
+            -GeneratedOn $GeneratedOn `
+            -Config $Config
     }
 
     return $null
@@ -93,13 +107,20 @@ function Test-UnderutilizedStorage {
         [object]$Resource,
 
         [Parameter(Mandatory = $true)]
-        [string]$GeneratedOn
+        [string]$GeneratedOn,
+
+        [Parameter(Mandatory = $true)]
+        [object]$Config
     )
+
+    if (-not $Config.rules.UnderutilizedStorage.enabled) {
+        return $null
+    }
 
     if (
         $Resource.type -eq "storage" -and
-        $Resource.lastAccessedDaysAgo -gt 90 -and
-        $Resource.cost -gt 20
+        $Resource.lastAccessedDaysAgo -gt $Config.rules.UnderutilizedStorage.minLastAccessedDaysAgo -and
+        $Resource.cost -gt $Config.rules.UnderutilizedStorage.minCost
     ) {
         Write-Host "$($Resource.name) is Underutilized"
 
@@ -109,7 +130,8 @@ function Test-UnderutilizedStorage {
             -Recommendation "Review access patterns, archive if needed, or delete if unused" `
             -Evidence "Last accessed $($Resource.lastAccessedDaysAgo) days ago and monthly cost is $($Resource.cost)" `
             -ActionRequired "Manual review required before deletion" `
-            -GeneratedOn $GeneratedOn
+            -GeneratedOn $GeneratedOn `
+            -Config $Config
     }
 
     return $null
@@ -121,13 +143,20 @@ function Test-UnattachedDisk {
         [object]$Resource,
 
         [Parameter(Mandatory = $true)]
-        [string]$GeneratedOn
+        [string]$GeneratedOn,
+
+        [Parameter(Mandatory = $true)]
+        [object]$Config
     )
+
+    if (-not $Config.rules.UnattachedDisk.enabled) {
+        return $null
+    }
 
     if (
         $Resource.type -eq "disk" -and
         $Resource.diskState -eq "unattached" -and
-        $Resource.cost -gt 0
+        $Resource.cost -gt $Config.rules.UnattachedDisk.minCost
     ) {
         Write-Host "$($Resource.name) is an Unattached Disk"
 
@@ -137,7 +166,8 @@ function Test-UnattachedDisk {
             -Recommendation "Review unattached disks and delete if not needed" `
             -Evidence "Disk state is unattached and monthly cost is $($Resource.cost)" `
             -ActionRequired "Manual review required before deletion" `
-            -GeneratedOn $GeneratedOn
+            -GeneratedOn $GeneratedOn `
+            -Config $Config
     }
 
     return $null
@@ -149,13 +179,20 @@ function Test-UnattachedPublicIp {
         [object]$Resource,
 
         [Parameter(Mandatory = $true)]
-        [string]$GeneratedOn
+        [string]$GeneratedOn,
+
+        [Parameter(Mandatory = $true)]
+        [object]$Config
     )
+
+    if (-not $Config.rules.UnattachedPublicIp.enabled) {
+        return $null
+    }
 
     if (
         $Resource.type -eq "publicIp" -and
         $Resource.ipaddressState -eq "unattached" -and
-        $Resource.cost -gt 0
+        $Resource.cost -gt $Config.rules.UnattachedPublicIp.minCost
     ) {
         Write-Host "$($Resource.name) is an Unattached Public IP"
 
@@ -165,7 +202,8 @@ function Test-UnattachedPublicIp {
             -Recommendation "Review unattached IP addresses and delete if not needed" `
             -Evidence "IP address is unattached and monthly cost is $($Resource.cost)" `
             -ActionRequired "Manual review required before deletion" `
-            -GeneratedOn $GeneratedOn
+            -GeneratedOn $GeneratedOn `
+            -Config $Config
     }
 
     return $null
@@ -177,15 +215,22 @@ function Test-IdleDevVM {
         [object]$Resource,
 
         [Parameter(Mandatory = $true)]
-        [string]$GeneratedOn
+        [string]$GeneratedOn,
+
+        [Parameter(Mandatory = $true)]
+        [object]$Config
     )
+
+    if (-not $Config.rules.IdleDevVM.enabled) {
+        return $null
+    }
 
     if (
         $Resource.type -eq "vm" -and
         $Resource.environment -eq "dev" -and
         $Resource.isRunning -eq $true -and
-        $Resource.cpu -lt 10 -and
-        $Resource.cost -gt 50
+        $Resource.cpu -lt $Config.rules.IdleDevVM.maxCpu -and
+        $Resource.cost -gt $Config.rules.IdleDevVM.minCost
     ) {
         Write-Host "$($Resource.name) is an Idle Dev VM"
 
@@ -195,7 +240,8 @@ function Test-IdleDevVM {
             -Recommendation "Review idle dev VM and deallocate if not needed" `
             -Evidence "VM is in dev environment, running, with low CPU usage, and monthly cost is $($Resource.cost)" `
             -ActionRequired "Manual review required before deallocation" `
-            -GeneratedOn $GeneratedOn
+            -GeneratedOn $GeneratedOn `
+            -Config $Config
     }
 
     return $null
