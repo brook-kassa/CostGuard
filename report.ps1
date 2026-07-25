@@ -1,0 +1,248 @@
+function New-CostGuardHtmlReport {
+    param (
+        [Parameter(Mandatory = $true)]
+        [array]$Findings,
+
+        [Parameter(Mandatory = $true)]
+        [string]$GeneratedOn,
+
+        [Parameter(Mandatory = $true)]
+        [int]$TotalResourcesScanned,
+
+        [Parameter(Mandatory = $true)]
+        [int]$TotalFlaggedResources,
+
+        [Parameter(Mandatory = $true)]
+        [int]$HealthyResources,
+
+        [Parameter(Mandatory = $true)]
+        [int]$TotalFindings,
+
+        [Parameter(Mandatory = $true)]
+        [decimal]$TotalFlaggedCost,
+
+        [Parameter(Mandatory = $true)]
+        [decimal]$TotalEstimatedSavings,
+
+        [Parameter(Mandatory = $true)]
+        [string]$OutputPath
+    )
+
+    $findingsTableRows = ""
+
+    if ($Findings.Count -eq 0) {
+        $findingsTableRows = "<tr><td colspan='8'>No cost issues found.</td></tr>"
+    }
+    else {
+        foreach ($finding in $Findings) {
+
+            $severityClass = ""
+
+            if ($finding.Severity -eq "High") {
+                $severityClass = "severity-high"
+            }
+            elseif ($finding.Severity -eq "Medium") {
+                $severityClass = "severity-medium"
+            }
+            elseif ($finding.Severity -eq "Low") {
+                $severityClass = "severity-low"
+            }
+
+            $findingsTableRows += @"
+<tr>
+    <td class="resource-name">$($finding.ResourceName)</td>
+    <td>$($finding.ResourceType)</td>
+    <td>$($finding.Issue)</td>
+    <td class="$severityClass">$($finding.Severity)</td>
+    <td>$($finding.MonthlyCost.ToString("C"))</td>
+    <td>$($finding.EstimatedSavings.ToString("C"))</td>
+    <td>$($finding.Recommendation)</td>
+    <td>$($finding.ActionRequired)</td>
+</tr>
+"@
+        }
+    }
+
+    $htmlReport = @"
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CostGuard Report</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            margin: 40px;
+            background-color: #1b1a19;
+            color: #ffffff;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+            font-size: 34px;
+            font-weight: 600;
+        }
+
+        h2 {
+            margin-top: 32px;
+            margin-bottom: 14px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #c8c6c4;
+            margin-bottom: 30px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 34px;
+        }
+
+        .card {
+            background-color: #252423;
+            padding: 18px;
+            border-radius: 2px;
+            border: 1px solid #3b3a39;
+        }
+
+        .card-title {
+            color: #c8c6c4;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-size: 26px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1b1a19;
+            color: #ffffff;
+            border: none;
+        }
+
+        thead {
+            border-bottom: 1px solid #605e5c;
+        }
+
+        th {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 15px;
+            text-align: left;
+            padding: 14px 12px;
+            background-color: #1b1a19;
+            border: none;
+        }
+
+        td {
+            padding: 14px 12px;
+            vertical-align: top;
+            border: none;
+            border-bottom: 1px solid #3b3a39;
+            color: #ffffff;
+        }
+
+        tr:hover td {
+            background-color: #252423;
+        }
+
+        .resource-name {
+            color: #60a5fa;
+            font-weight: 500;
+        }
+
+        .severity-high {
+            color: #ffb4ab;
+            font-weight: 600;
+        }
+
+        .severity-medium {
+            color: #ffd166;
+            font-weight: 600;
+        }
+
+        .severity-low {
+            color: #9ee493;
+            font-weight: 600;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #a19f9d;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <h1>CostGuard Analysis Report</h1>
+    <div class="subtitle">Generated On: $GeneratedOn</div>
+
+    <div class="summary-grid">
+        <div class="card">
+            <div class="card-title">Resources Scanned</div>
+            <div class="card-value">$TotalResourcesScanned</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Flagged Resources</div>
+            <div class="card-value">$TotalFlaggedResources</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Healthy Resources</div>
+            <div class="card-value">$HealthyResources</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Total Findings</div>
+            <div class="card-value">$TotalFindings</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Flagged Monthly Cost</div>
+            <div class="card-value">$($TotalFlaggedCost.ToString("C"))</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Estimated Monthly Savings</div>
+            <div class="card-value">$($TotalEstimatedSavings.ToString("C"))</div>
+        </div>
+    </div>
+
+    <h2>Findings</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Resource Name</th>
+                <th>Type</th>
+                <th>Issue</th>
+                <th>Severity</th>
+                <th>Monthly Cost</th>
+                <th>Estimated Savings</th>
+                <th>Recommendation</th>
+                <th>Action Required</th>
+            </tr>
+        </thead>
+        <tbody>
+            $findingsTableRows
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Source: CostGuard Analysis
+    </div>
+</body>
+</html>
+"@
+
+    $htmlReport | Set-Content -Path $OutputPath
+}

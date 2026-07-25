@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 . "$PSScriptRoot\rules.ps1" #[loads rules.ps1] 
 function Test-CostGuardConfig {
     param (
@@ -9,6 +10,18 @@ function Test-CostGuardConfig {
         "highMonthlyCost",
         "mediumMonthlyCost"
     )
+=======
+. "$PSScriptRoot\rules.ps1"
+. "$PSScriptRoot\report.ps1"
+. "$PSScriptRoot\summary.ps1"
+
+
+
+####################### Load Data and Prepare Output Paths #########################################################
+
+$jsonPath = "$PSScriptRoot\resources.json"
+$configPath = "$PSScriptRoot\config.json"
+>>>>>>> 8328d7a3c952c75b00ba256e7ea9f4d72bf6465c
 
     $requiredRuleProperties = @{
         IdleDevVM = @(
@@ -87,6 +100,7 @@ $htmlReportPath = Join-Path -Path $reportFolder -ChildPath "report.html"
 $jsonString = Get-Content -Path $jsonPath -Raw #Grabs resource.json data into single-line format 
 $outputs = $jsonString | ConvertFrom-Json #Converts resource json data to PSObject(s)
 
+<<<<<<< HEAD
 $configString = Get-Content -Path $configPath -Raw #Grabs config.json data into single-line format
 $config = $configString | ConvertFrom-Json #Converts config.json data into PSObject(s)
 
@@ -98,6 +112,20 @@ $timeZone = "EDT" # time zone (may turn to EST? or dynamic time zones)
 $generatedOn = "$generatedOn $timeZone"
 #tests each rule on each resource, grabs the generation time and applies config rules 
 foreach ($output in $outputs) { 
+=======
+$configString = Get-Content -Path $configPath -Raw
+$config = $configString | ConvertFrom-Json
+
+$findings = @()
+
+$generatedOn = Get-Date -Format "dddd MM/dd/yyyy hh:mm tt"
+$timeZone = "EDT"
+$generatedOn = "$generatedOn $timeZone"
+
+####################### Run Rules Against Each Resource #########################################################
+
+foreach ($output in $outputs) {
+>>>>>>> 8328d7a3c952c75b00ba256e7ea9f4d72bf6465c
 
     $ruleResults = @(
         Test-IdleDevVM -Resource $output -GeneratedOn $generatedOn -Config $config
@@ -105,7 +133,11 @@ foreach ($output in $outputs) {
         Test-UnderutilizedStorage -Resource $output -GeneratedOn $generatedOn -Config $config
         Test-UnattachedDisk -Resource $output -GeneratedOn $generatedOn -Config $config
         Test-UnattachedPublicIp -Resource $output -GeneratedOn $generatedOn -Config $config
+<<<<<<< HEAD
     )
+=======
+)
+>>>>>>> 8328d7a3c952c75b00ba256e7ea9f4d72bf6465c
 
     $matchedFindings = @($ruleResults | Where-Object { $null -ne $_ }) 
 
@@ -116,6 +148,8 @@ foreach ($output in $outputs) {
         Write-Host "$($output.name) is Healthy"
     }
 }
+
+####################### Calculate Totals #########################################################
 
 $findings = @($findings | Sort-Object -Property EstimatedSavings -Descending)
 
@@ -136,6 +170,8 @@ if ($null -eq $totalEstimatedSavings) {
     $totalEstimatedSavings = 0
 }
 
+####################### Console Output and CSV Export #########################################################
+
 Write-Host ""
 Write-Host ""
 
@@ -155,259 +191,31 @@ Write-Host "Healthy Resources: $healthyResources"
 Write-Host "Total Monthly Cost of Flagged Resources: $totalFlaggedCost"
 Write-Host "Total Estimated Monthly Savings: $totalEstimatedSavings"
 
-$summary = @()
-$summary += "CostGuard Analysis Summary"
-$summary += "Generated On: $generatedOn"
-$summary += ""
-$summary += "Total Resources Scanned: $totalResourcesScanned"
-$summary += "Total Flagged Resources: $totalFlaggedResources"
-$summary += "Total Findings: $totalFindings"
-$summary += "Healthy Resources: $healthyResources"
-$summary += "Total Monthly Cost of Flagged Resources: $totalFlaggedCost"
-$summary += "Total Estimated Monthly Savings: $totalEstimatedSavings"
-$summary += ""
+####################### Generate Summary and HTML Report #########################################################
 
-if ($findings.Count -eq 0) {
-    $summary += "No cost issues found."
-}
-else {
-    $summary += "Findings by Issue:"
+New-CostGuardSummary `
+    -Findings $findings `
+    -GeneratedOn $generatedOn `
+    -TotalResourcesScanned $totalResourcesScanned `
+    -TotalFlaggedResources $totalFlaggedResources `
+    -TotalFindings $totalFindings `
+    -HealthyResources $healthyResources `
+    -TotalFlaggedCost $totalFlaggedCost `
+    -TotalEstimatedSavings $totalEstimatedSavings `
+    -FindingsCsvPath $findingsCsvPath `
+    -HtmlReportPath $htmlReportPath `
+    -OutputPath $summaryPath
 
-    $findings | Group-Object -Property Issue | ForEach-Object {
-        $summary += "- $($_.Name): $($_.Count)"
-    }
-
-    $summary += ""
-    $summary += "Findings by Severity:"
-
-    $findings | Group-Object -Property Severity | ForEach-Object {
-        $summary += "- $($_.Name): $($_.Count)"
-    }
-
-    $summary += ""
-    $summary += "Detailed findings exported to: $findingsCsvPath"
-    $summary += "HTML report exported to: $htmlReportPath"
-}
-
-$summary | Set-Content -Path $summaryPath
-
-$findingsTableRows = ""
-
-if ($findings.Count -eq 0) {
-    $findingsTableRows = "<tr><td colspan='8'>No cost issues found.</td></tr>"
-}
-else {
-    foreach ($finding in $findings) {
-
-        $severityClass = ""
-
-        if ($finding.Severity -eq "High") {
-            $severityClass = "severity-high"
-        }
-        elseif ($finding.Severity -eq "Medium") {
-            $severityClass = "severity-medium"
-        }
-        elseif ($finding.Severity -eq "Low") {
-            $severityClass = "severity-low"
-        }
-
-        $findingsTableRows += @"
-<tr>
-    <td class="resource-name">$($finding.ResourceName)</td>
-    <td>$($finding.ResourceType)</td>
-    <td>$($finding.Issue)</td>
-    <td class="$severityClass">$($finding.Severity)</td>
-    <td>$($finding.MonthlyCost.ToString("C"))</td>
-    <td>$($finding.EstimatedSavings.ToString("C"))</td>
-    <td>$($finding.Recommendation)</td>
-    <td>$($finding.ActionRequired)</td>
-</tr>
-"@
-    }
-}
-
-$htmlReport = @"
-<!DOCTYPE html>
-<html>
-<head>
-    <title>CostGuard Report</title>
-    <style>
-        body {
-            font-family: "Segoe UI", Arial, sans-serif;
-            margin: 40px;
-            background-color: #1b1a19;
-            color: #ffffff;
-        }
-
-        h1 {
-            margin-bottom: 5px;
-            font-size: 34px;
-            font-weight: 600;
-        }
-
-        h2 {
-            margin-top: 32px;
-            margin-bottom: 14px;
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        .subtitle {
-            color: #c8c6c4;
-            margin-bottom: 30px;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-            margin-bottom: 34px;
-        }
-
-        .card {
-            background-color: #252423;
-            padding: 18px;
-            border-radius: 2px;
-            border: 1px solid #3b3a39;
-        }
-
-        .card-title {
-            color: #c8c6c4;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .card-value {
-            font-size: 26px;
-            font-weight: 600;
-            color: #ffffff;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #1b1a19;
-            color: #ffffff;
-            border: none;
-        }
-
-        thead {
-            border-bottom: 1px solid #605e5c;
-        }
-
-        th {
-            color: #ffffff;
-            font-weight: 600;
-            font-size: 15px;
-            text-align: left;
-            padding: 14px 12px;
-            background-color: #1b1a19;
-            border: none;
-        }
-
-        td {
-            padding: 14px 12px;
-            vertical-align: top;
-            border: none;
-            border-bottom: 1px solid #3b3a39;
-            color: #ffffff;
-        }
-
-        tr:hover td {
-            background-color: #252423;
-        }
-
-        .resource-name {
-            color: #60a5fa;
-            font-weight: 500;
-        }
-
-        .severity-high {
-            color: #ffb4ab;
-            font-weight: 600;
-        }
-
-        .severity-medium {
-            color: #ffd166;
-            font-weight: 600;
-        }
-
-        .severity-low {
-            color: #9ee493;
-            font-weight: 600;
-        }
-
-        .footer {
-            margin-top: 30px;
-            color: #a19f9d;
-            font-size: 13px;
-        }
-    </style>
-</head>
-<body>
-    <h1>CostGuard Analysis Report</h1>
-    <div class="subtitle">Generated On: $generatedOn</div>
-
-    <div class="summary-grid">
-        <div class="card">
-            <div class="card-title">Resources Scanned</div>
-            <div class="card-value">$totalResourcesScanned</div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Flagged Resources</div>
-            <div class="card-value">$totalFlaggedResources</div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Healthy Resources</div>
-            <div class="card-value">$healthyResources</div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Total Findings</div>
-            <div class="card-value">$totalFindings</div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Flagged Monthly Cost</div>
-            <div class="card-value">$($totalFlaggedCost.ToString("C"))</div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Estimated Monthly Savings</div>
-            <div class="card-value">$($totalEstimatedSavings.ToString("C"))</div>
-        </div>
-    </div>
-
-    <h2>Findings</h2>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Resource Name</th>
-                <th>Type</th>
-                <th>Issue</th>
-                <th>Severity</th>
-                <th>Monthly Cost</th>
-                <th>Estimated Savings</th>
-                <th>Recommendation</th>
-                <th>Action Required</th>
-            </tr>
-        </thead>
-        <tbody>
-            $findingsTableRows
-        </tbody>
-    </table>
-
-    <div class="footer">
-        Source: CostGuard Analysis
-    </div>
-</body>
-</html>
-"@
-
-$htmlReport | Set-Content -Path $htmlReportPath
+New-CostGuardHtmlReport `
+    -Findings $findings `
+    -GeneratedOn $generatedOn `
+    -TotalResourcesScanned $totalResourcesScanned `
+    -TotalFlaggedResources $totalFlaggedResources `
+    -HealthyResources $healthyResources `
+    -TotalFindings $totalFindings `
+    -TotalFlaggedCost $totalFlaggedCost `
+    -TotalEstimatedSavings $totalEstimatedSavings `
+    -OutputPath $htmlReportPath
 
 Write-Host "CostGuard summary exported to $summaryPath"
 Write-Host "CostGuard HTML report exported to $htmlReportPath"

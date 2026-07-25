@@ -72,21 +72,34 @@ function Test-OversizedVM {
 
         [Parameter(Mandatory = $true)]
         [string]$GeneratedOn,
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 8328d7a3c952c75b00ba256e7ea9f4d72bf6465c
         [Parameter(Mandatory = $true)]
         [object]$Config
     )
 
+<<<<<<< HEAD
     $configRules = $Config.rules.OversizedVM
 
     if ($configRules.enabled -ne $true){
+=======
+    if (-not $Config.rules.OversizedVM.enabled) {
+>>>>>>> 8328d7a3c952c75b00ba256e7ea9f4d72bf6465c
         return $null
     }
 
     if (
         $Resource.type -eq "vm" -and
+<<<<<<< HEAD
         $Resource.cpu -lt $configRules.maxCpuPercent -and
         $Resource.cost -gt $configRules.minMonthlyCost
+=======
+        $Resource.cpu -lt $Config.rules.OversizedVM.maxCpu -and
+        $Resource.cost -gt $Config.rules.OversizedVM.minCost
+>>>>>>> 8328d7a3c952c75b00ba256e7ea9f4d72bf6465c
     ) {
         Write-Host "$($Resource.name) is Oversized"
 
@@ -110,6 +123,7 @@ function Test-UnderutilizedStorage {
 
         [Parameter(Mandatory = $true)]
         [string]$GeneratedOn,
+<<<<<<< HEAD
 
         [Parameter(Mandatory = $true)]
         [object]$Config
@@ -126,6 +140,22 @@ function Test-UnderutilizedStorage {
         $Resource.lastAccessedDaysAgo -gt $configRules.minLastAccessedDaysAgo -and
         $Resource.cost -gt $configRules.minMonthlyCost
     )  {
+=======
+
+        [Parameter(Mandatory = $true)]
+        [object]$Config
+    )
+
+    if (-not $Config.rules.UnderutilizedStorage.enabled) {
+        return $null
+    }
+
+    if (
+        $Resource.type -eq "storage" -and
+        $Resource.lastAccessedDaysAgo -gt $Config.rules.UnderutilizedStorage.minLastAccessedDaysAgo -and
+        $Resource.cost -gt $Config.rules.UnderutilizedStorage.minCost
+    ) {
+>>>>>>> 8328d7a3c952c75b00ba256e7ea9f4d72bf6465c
         Write-Host "$($Resource.name) is Underutilized"
 
         return New-Finding `
@@ -159,10 +189,18 @@ function Test-UnattachedDisk {
         return $null
     }
 
+    if (-not $Config.rules.UnattachedDisk.enabled) {
+        return $null
+    }
+
     if (
         $Resource.type -eq "disk" -and
         $Resource.diskState -eq "unattached" -and
+<<<<<<< HEAD
         $Resource.cost -gt $configRules.minMonthlyCost
+=======
+        $Resource.cost -gt $Config.rules.UnattachedDisk.minCost
+>>>>>>> 8328d7a3c952c75b00ba256e7ea9f4d72bf6465c
     ) {
         Write-Host "$($Resource.name) is an Unattached Disk"
 
@@ -186,21 +224,34 @@ function Test-UnattachedPublicIp {
 
         [Parameter(Mandatory = $true)]
         [string]$GeneratedOn,
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 8328d7a3c952c75b00ba256e7ea9f4d72bf6465c
         [Parameter(Mandatory = $true)]
         [object]$Config
     )
 
+<<<<<<< HEAD
     $configRules = $Config.rules.UnattachedPublicIp
 
     if ($configRules.enabled -ne $true) {
+=======
+    if (-not $Config.rules.UnattachedPublicIp.enabled) {
+>>>>>>> 8328d7a3c952c75b00ba256e7ea9f4d72bf6465c
         return $null
     }
 
     if (
         $Resource.type -eq "publicIp" -and
+<<<<<<< HEAD
         $Resource.ipaddressState -eq "unattached" -and 
         $Resource.cost -gt $configRules.minMonthlyCost
+=======
+        $Resource.ipaddressState -eq "unattached" -and
+        $Resource.cost -gt $Config.rules.UnattachedPublicIp.minCost
+>>>>>>> 8328d7a3c952c75b00ba256e7ea9f4d72bf6465c
     ) {
         Write-Host "$($Resource.name) is an Unattached Public IP"
 
@@ -229,9 +280,13 @@ function Test-IdleDevVM {
         [object]$Config
     )
 
+<<<<<<< HEAD
     $configRules = $Config.rules.IdleDevVM
 
     if ($configRules.enabled -ne $true) {
+=======
+    if (-not $Config.rules.IdleDevVM.enabled) {
+>>>>>>> 8328d7a3c952c75b00ba256e7ea9f4d72bf6465c
         return $null
     }
 
@@ -239,9 +294,14 @@ function Test-IdleDevVM {
         $Resource.type -eq "vm" -and
         $Resource.environment -eq "dev" -and
         $Resource.isRunning -eq $true -and
+<<<<<<< HEAD
         $Resource.cpu -lt $configRules.maxCpuPercent -and
         $Resource.lastAccessedDaysAgo -gt $configRules.minLastAccessedDaysAgo -and
         $Resource.cost -gt $configRules.minMonthlyCost
+=======
+        $Resource.cpu -lt $Config.rules.IdleDevVM.maxCpu -and
+        $Resource.cost -gt $Config.rules.IdleDevVM.minCost
+>>>>>>> 8328d7a3c952c75b00ba256e7ea9f4d72bf6465c
     ) {
         Write-Host "$($Resource.name) is an Idle Dev VM"
 
