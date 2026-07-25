@@ -1,0 +1,32 @@
+{
+    "rules": {
+        "IdleDevVM": {
+            "enabled": true,
+            "maxCpuPercent": 10,
+            "minMonthlyCost": 50,
+            "minLastAccessedDaysAgo": 14
+        },
+        "OversizedVM": {
+            "enabled": true,
+            "maxCpuPercent": 5,
+            "minMonthlyCost": 50
+        },
+        "UnderutilizedStorage": {
+            "enabled": true,
+            "minLastAccessedDaysAgo": 90,
+            "minMonthlyCost": 20
+        },
+        "UnattachedDisk": {
+            "enabled": true,
+            "minMonthlyCost": 0
+        },
+        "UnattachedPublicIp": {
+            "enabled": true,
+            "minMonthlyCost": 0
+        }
+    },
+    "severity": {
+        "highMonthlyCost": 100,
+        "mediumMonthlyCost": 25
+    }
+}

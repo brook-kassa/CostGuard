@@ -1,0 +1,11 @@
+CostGuard Analysis Summary
+Generated On: Monday 06/15/2026 02:02 PM EDT
+
+Total Resources Scanned: 6
+Total Flagged Resources: 0
+Total Findings: 0
+Healthy Resources: 6
+Total Monthly Cost of Flagged Resources: 0
+Total Estimated Monthly Savings: 0
+
+No cost issues found.

@@ -1,0 +1,24 @@
+CostGuard Analysis Summary
+Generated On: Saturday 07/25/2026 04:53 PM EDT
+
+Total Resources Scanned: 6
+Total Flagged Resources: 5
+Total Findings: 5
+Healthy Resources: 1
+Total Monthly Cost of Flagged Resources: 235
+Total Estimated Monthly Savings: 235
+
+Findings by Issue:
+- Oversized VM: 1
+- Idle Dev VM: 1
+- Underutilized Storage: 1
+- Unattached Disk: 1
+- Unattached Public IP: 1
+
+Findings by Severity:
+- High: 1
+- Medium: 2
+- Low: 2
+
+Detailed findings exported to: C:\Users\brook\Downloads\CostGuard-main\CostGuard-main\reports\2026-07-25_16-53-58\findings.csv
+HTML report exported to: C:\Users\brook\Downloads\CostGuard-main\CostGuard-main\reports\2026-07-25_16-53-58\report.html

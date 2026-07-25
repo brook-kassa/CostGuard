@@ -1,36 +1,115 @@
-. "$PSScriptRoot\rules.ps1"
+. "$PSScriptRoot\rules.ps1" #[loads rules.ps1] 
+function Test-CostGuardConfig {
+    param (
+        [Parameter(Mandatory = $true)]
+        [object]$Config
+    )
 
-$jsonPath = "$PSScriptRoot\resources.json"
+    $requiredSeverityProperties = @(
+        "highMonthlyCost",
+        "mediumMonthlyCost"
+    )
 
-$timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
-$reportFolder = Join-Path -Path "$PSScriptRoot\reports" -ChildPath $timestamp
+    $requiredRuleProperties = @{
+        IdleDevVM = @(
+            "enabled",
+            "maxCpuPercent",
+            "minMonthlyCost",
+            "minLastAccessedDaysAgo"
+        )
 
-New-Item -ItemType Directory -Path $reportFolder -Force | Out-Null
+        OversizedVM = @(
+            "enabled",
+            "maxCpuPercent",
+            "minMonthlyCost"
+        )
+
+        UnderutilizedStorage = @(
+            "enabled",
+            "minLastAccessedDaysAgo",
+            "minMonthlyCost"
+        )
+
+        UnattachedDisk = @(
+            "enabled",
+            "minMonthlyCost"
+        )
+
+        UnattachedPublicIp = @(
+            "enabled",
+            "minMonthlyCost"
+        )
+    }
+
+    if ($null -eq $Config.rules) {
+        throw "Configuration validation failed: missing 'rules' section."
+    }
+
+    if ($null -eq $Config.severity) {
+        throw "Configuration validation failed: missing 'severity' section."
+    }
+
+    foreach ($propertyName in $requiredSeverityProperties) {
+        if ($null -eq $Config.severity.$propertyName) {
+            throw "Configuration validation failed: missing severity property '$propertyName'."
+        }
+    }
+
+    foreach ($ruleName in $requiredRuleProperties.Keys) {
+        $ruleConfig = $Config.rules.$ruleName
+
+        if ($null -eq $ruleConfig) {
+            throw "Configuration validation failed: missing rule '$ruleName'."
+        }
+
+        foreach ($propertyName in $requiredRuleProperties[$ruleName]) {
+            if ($null -eq $ruleConfig.$propertyName) {
+                throw "Configuration validation failed: rule '$ruleName' is missing property '$propertyName'."
+            }
+        }
+    }
+
+    return $true
+}
+
+$jsonPath = "$PSScriptRoot\resources.json" #Loads resources.json into jsonPath
+$configPath = "$PSScriptRoot\config.json" #loads config.json into configPath
+
+$timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss" #Formats date (ex: 2026-06-24_01:50:59)
+$reportFolder = Join-Path -Path "$PSScriptRoot\reports" -ChildPath $timestamp #names the report folder the timestamp
+
+New-Item -ItemType Directory -Path $reportFolder -Force | Out-Null 
 
 $findingsCsvPath = Join-Path -Path $reportFolder -ChildPath "findings.csv"
 $summaryPath = Join-Path -Path $reportFolder -ChildPath "summary.txt"
 $htmlReportPath = Join-Path -Path $reportFolder -ChildPath "report.html"
 
-$jsonString = Get-Content -Path $jsonPath -Raw
-$outputs = $jsonString | ConvertFrom-Json
+$jsonString = Get-Content -Path $jsonPath -Raw #Grabs resource.json data into single-line format 
+$outputs = $jsonString | ConvertFrom-Json #Converts resource json data to PSObject(s)
 
-$findings = @()
-$generatedOn = Get-Date -Format "dddd MM/dd/yyyy hh:mm tt"
-$timeZone = "EDT"
+$configString = Get-Content -Path $configPath -Raw #Grabs config.json data into single-line format
+$config = $configString | ConvertFrom-Json #Converts config.json data into PSObject(s)
+
+Test-CostGuardConfig -Config $config | Out-Null
+
+$findings = @() #creates a findings array
+$generatedOn = Get-Date -Format "dddd MM/dd/yyyy hh:mm tt" #generates date-time 
+$timeZone = "EDT" # time zone (may turn to EST? or dynamic time zones)
 $generatedOn = "$generatedOn $timeZone"
-foreach ($output in $outputs) {
+#tests each rule on each resource, grabs the generation time and applies config rules 
+foreach ($output in $outputs) { 
 
     $ruleResults = @(
-        Test-IdleDevVM -Resource $output -GeneratedOn $generatedOn
-        Test-OversizedVM -Resource $output -GeneratedOn $generatedOn
-        Test-UnderutilizedStorage -Resource $output -GeneratedOn $generatedOn
-        Test-UnattachedDisk -Resource $output -GeneratedOn $generatedOn
-        Test-UnattachedPublicIp -Resource $output -GeneratedOn $generatedOn
+        Test-IdleDevVM -Resource $output -GeneratedOn $generatedOn -Config $config
+        Test-OversizedVM -Resource $output -GeneratedOn $generatedOn -Config $config
+        Test-UnderutilizedStorage -Resource $output -GeneratedOn $generatedOn -Config $config
+        Test-UnattachedDisk -Resource $output -GeneratedOn $generatedOn -Config $config
+        Test-UnattachedPublicIp -Resource $output -GeneratedOn $generatedOn -Config $config
     )
 
-    $matchedFindings = @($ruleResults | Where-Object { $null -ne $_ })
+    $matchedFindings = @($ruleResults | Where-Object { $null -ne $_ }) 
 
-    if ($matchedFindings.Count -gt 0) {
+    if ($matchedFindings.Count -gt 0) { #place any matchedfindings into findings array
         $findings += $matchedFindings
     }
     else {
